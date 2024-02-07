@@ -1,6 +1,7 @@
 from custom_encoder import CustomEncoder
 import json
 
+
 def buildResponse(statusCode, body=None):
     response = {
         'statusCode': statusCode,

@@ -5,7 +5,6 @@ from io import BytesIO
 import logging
 from build_response import *
 
-
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 

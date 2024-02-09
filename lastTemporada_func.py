@@ -21,7 +21,6 @@ def getLastTemporada():
 
         # Obtener el último valor ingresado
         ultimo_valor = df.iloc[-1].to_dict()
-        print("ultimo_valor: ", ultimo_valor)
         if ultimo_valor:
             body = {
             'Temporada': ultimo_valor['temporada'],

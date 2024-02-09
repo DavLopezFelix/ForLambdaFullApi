@@ -20,16 +20,15 @@ def getAppLocation():
         excel_file = s3_client.get_object(Bucket=bucket_name, Key=file_key)
         df = pd.read_excel(BytesIO(excel_file['Body'].read()))         
 
-        # Obtener el último valor ingresado
-        ultimo_valor = df.iloc[-1].to_dict()
-        print("ultimo_valor: ", ultimo_valor)
-        if ultimo_valor:
-            body = {
-            'FechaDeRegistro': str(ultimo_valor['Date']),
-            'App1': ultimo_valor['App1'],
-            'App2': ultimo_valor['App2'],
-            'App3': ultimo_valor['App3']
-            }
+        #Getting  the last one of each column
+        column_headers = df.columns.tolist()
+        if len(column_headers) > 1:
+            body = {}
+            for column_header in column_headers:
+                str_column_header = str(column_header)
+
+                # Obtener el último valor ingresado y agregar como parte del body
+                body[str_column_header] = df[str_column_header].iloc[-1]
 
             return buildResponse(200, body)
         else:

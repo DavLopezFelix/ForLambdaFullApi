@@ -1,7 +1,7 @@
 import boto3
 from time import strftime
 import pandas as pd
-from io import BytesIO
+from io import StringIO
 import logging
 from build_response import *
 
@@ -12,13 +12,13 @@ logger.setLevel(logging.INFO)
 # Crear o cargar el archivo Excel desde S3
 s3_client = boto3.client('s3')
 bucket_name = 'exceltrigger'
-file_key = 'UbicacionesPorAppSNP.xlsx'
+file_key = 'UbicacionesPorAppSNP.csv'
 
 
 def getAppLocation():
     try:
-        excel_file = s3_client.get_object(Bucket=bucket_name, Key=file_key)
-        df = pd.read_excel(BytesIO(excel_file['Body'].read()))         
+        csv_file = s3_client.get_object(Bucket=bucket_name, Key=file_key)
+        df = pd.read_csv(StringIO(csv_file['Body'].read().decode('utf-8')))         
 
         #Getting  the last one of each column
         column_headers = df.columns.tolist()
@@ -45,18 +45,18 @@ def saveAppLocation(requestBody):
     df = pd.DataFrame(requestBody, index=[0])
 
     try:
-        excel_file = s3_client.get_object(Bucket=bucket_name, Key=file_key)
-        existing_df = pd.read_excel(BytesIO(excel_file['Body'].read()))
-    except Exception:
-        existing_df = pd.DataFrame()
+        csv_file = s3_client.get_object(Bucket=bucket_name, Key=file_key)
+        existing_df = pd.read_csv(StringIO(csv_file['Body'].read().decode('utf-8')))
+    except:
+        logger.exception("Error al leer las Ubicacion de Applicaciones")
     
 # Concatenar los DataFrames
     final_df = pd.concat([existing_df, df], ignore_index=True)
 
 # Guardar el DataFrame actualizado en S3
-    with BytesIO() as buffer:
-        final_df.to_excel(buffer, index=False)
-        s3_client.put_object(Body=buffer.getvalue(), Bucket=bucket_name, Key=file_key)
+    csv_buffer = StringIO()
+    final_df.to_csv(csv_buffer, index=False)
+    s3_client.put_object(Body=csv_buffer.getvalue().encode('utf-8'), Bucket=bucket_name, Key=file_key)
 
     body = {
         'Operation': 'Save',

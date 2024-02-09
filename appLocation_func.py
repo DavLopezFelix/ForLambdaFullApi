@@ -26,9 +26,11 @@ def getAppLocation():
             body = {}
             for column_header in column_headers:
                 str_column_header = str(column_header)
+                last_index = df[str_column_header].last_valid_index()
 
                 # Obtener el último valor ingresado y agregar como parte del body
-                body[str_column_header] = df[str_column_header].iloc[-1]
+                body[str_column_header] = df[str_column_header].loc[last_index]
+                print(df[str_column_header].loc[last_index])
 
             return buildResponse(200, body)
         else:

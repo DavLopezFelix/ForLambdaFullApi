@@ -62,4 +62,4 @@ def saveTemporada(requestBody):
         'Item': requestBody
     }
     
-    return buildResponse(200, body)
+    return buildResponse(201, body)

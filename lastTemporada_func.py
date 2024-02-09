@@ -11,13 +11,13 @@ logger.setLevel(logging.INFO)
 # Crear o cargar el archivo Excel desde S3
 s3_client = boto3.client('s3')
 bucket_name = 'exceltrigger'
-file_key = 'TemporadasSNP.xlsx'
+file_key = 'TemporadasSNP.csv'
 
 
 def getLastTemporada():
     try:
         excel_file = s3_client.get_object(Bucket=bucket_name, Key=file_key)
-        df = pd.read_excel(BytesIO(excel_file['Body'].read()))         
+        df = pd.read_csv(BytesIO(excel_file['Body'].read()))
 
         # Obtener el último valor ingresado
         ultimo_valor = df.iloc[-1].to_dict()

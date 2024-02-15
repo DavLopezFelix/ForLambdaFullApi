@@ -10,14 +10,14 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 # Crear o cargar el archivo Excel desde S3
-s3_client = boto3.client('s3')
+s3_client_Ubic = boto3.client('s3')
 bucket_name = 'exceltrigger'
-file_key = 'UbicacionesPorAppSNP.csv'
+file_key_Ubic = 'UbicacionesPorAppSNP.csv'
 
 
 def getAppLocation():
     try:
-        csv_file = s3_client.get_object(Bucket=bucket_name, Key=file_key)
+        csv_file = s3_client_Ubic.get_object(Bucket=bucket_name, Key=file_key_Ubic)
         df = pd.read_csv(StringIO(csv_file['Body'].read().decode('utf-8')))         
 
         #Getting  the last one of each column
@@ -45,7 +45,7 @@ def saveAppLocation(requestBody):
     df = pd.DataFrame(requestBody, index=[0])
 
     try:
-        csv_file = s3_client.get_object(Bucket=bucket_name, Key=file_key)
+        csv_file = s3_client_Ubic.get_object(Bucket=bucket_name, Key=file_key_Ubic)
         existing_df = pd.read_csv(StringIO(csv_file['Body'].read().decode('utf-8')))
     except:
         logger.exception("Error al leer las Ubicacion de Applicaciones")
@@ -56,7 +56,7 @@ def saveAppLocation(requestBody):
 # Guardar el DataFrame actualizado en S3
     csv_buffer = StringIO()
     final_df.to_csv(csv_buffer, index=False)
-    s3_client.put_object(Body=csv_buffer.getvalue().encode('utf-8'), Bucket=bucket_name, Key=file_key)
+    s3_client_Ubic.put_object(Body=csv_buffer.getvalue().encode('utf-8'), Bucket=bucket_name, Key=file_key_Ubic)
 
     body = {
         'Operation': 'Save',

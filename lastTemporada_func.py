@@ -4,6 +4,8 @@ import pandas as pd
 from io import StringIO
 import logging
 from build_response import *
+import os
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -12,6 +14,8 @@ logger.setLevel(logging.INFO)
 s3_client = boto3.client('s3')
 bucket_name = 'exceltrigger'
 file_key = 'TemporadasSNP.csv'
+
+data = os.environ['data']
 
 
 def getLastTemporada():
@@ -28,7 +32,7 @@ def getLastTemporada():
             'A': ultimo_valor['A'],
             'B': ultimo_valor['B']
             }
-
+            print(data)
             return buildResponse(200, body)
         else:
             return buildResponse(404, {'Message': 'No hay ultimo registro'})
